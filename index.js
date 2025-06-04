@@ -43,6 +43,13 @@ app.post('/api/users', (req, res) => {
   })
 })
 
+app.get("/api/users", (req, res, next) => {
+    User.find({})
+    .then((users) => {
+      res.json(users)
+    })
+  })
+
 app.post("/api/users/:id/exercises", (req, res) => {
   const id = req.params.id
   const description = req.body.description
@@ -65,6 +72,24 @@ app.post("/api/users/:id/exercises", (req, res) => {
       })
     })
 
+  })
+})
+
+app.get("/api/users/:id/logs", (req, res) => {
+  const id = req.params.id
+
+  User.findById(id).then(user => {
+    const log = user.log.map(entry => ({
+      description: entry.description,
+      duration: entry.duration,
+      date: entry.date.toDateString()
+    }))
+    res.json({
+      _id: id,
+      username: user.username,
+      count: log.length,
+      log: log
+    })
   })
 })
 
