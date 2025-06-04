@@ -76,53 +76,40 @@ app.post("/api/users/:id/exercises", (req, res) => {
 })
 
 app.get("/api/users/:id/logs", (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
+  const from = req.query.from ? new Date(req.query.from) : null;
+  const to = req.query.to ? new Date(req.query.to) : null;
+  const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
   User.findById(id).then(user => {
-    const log = user.log.map(entry => ({
-      description: entry.description,
-      duration: entry.duration,
-      date: entry.date.toDateString()
-    }))
-    res.json({
-      _id: id,
-      username: user.username,
-      count: log.length,
-      log: log
-    })
-  })
-})
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-app.get("/api/users/:id/logs?", (req, res) => {
-  const id = req.params.id
-  const from = new Date(req.query.from)
-  const to = new Date(req.query.to)
-  const limit = parseInt(req.query.limit)
+    let log = user.log;
 
-  User.findById(id).then(user => {
-    let log = user.log
-    if (from) {
-      log = log.filter(entry => entry.date >= from)
+    if (from && !isNaN(from)) {
+      log = log.filter(entry => entry.date >= from);
     }
-    if (to) {
-      log = log.filter(entry => entry.date <= to)
+    if (to && !isNaN(to)) {
+      log = log.filter(entry => entry.date <= to);
     }
-    if (limit) {
-      log = log.slice(0, limit)
+    if (limit && !isNaN(limit)) {
+      log = log.slice(0, limit);
     }
+
     log = log.map(entry => ({
       description: entry.description,
       duration: entry.duration,
       date: entry.date.toDateString()
-    }))
+    }));
+
     res.json({
-      _id: id,
+      _id: user._id,
       username: user.username,
       count: log.length,
       log: log
-    })
-  })
-})
+    });
+  }).catch(() => res.status(400).json({ error: "Invalid user id" }));
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
