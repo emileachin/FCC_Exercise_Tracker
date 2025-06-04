@@ -1,12 +1,12 @@
 const path = require('path')
-const { body, query, validationResult, } = require('-validatoexpressr/check')
+const { body, query, validationResult, } = require('express-validator/check')
 const { sanitizeBody, } = require('express-validator/filter')
 
 const User = require('./userModel')
 const root = path.resolve(__dirname, ".")
 const publicPath = path.join(root, "public")
 
-module.exports = function(app) {
+module.exports = function(app) { 
 
   // DEBUG use to delete users as needed, delete later
   // User.deleteOne({ _id: "5b6710b887e06925b22a8bcb"}, (err, user) => {
