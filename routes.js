@@ -1,5 +1,5 @@
 const path = require('path')
-const { body, query, validationResult, } = require('express-validator/check')
+const { body, query, validationResult, } = require('-validatoexpressr/check')
 const { sanitizeBody, } = require('express-validator/filter')
 
 const User = require('./userModel')
